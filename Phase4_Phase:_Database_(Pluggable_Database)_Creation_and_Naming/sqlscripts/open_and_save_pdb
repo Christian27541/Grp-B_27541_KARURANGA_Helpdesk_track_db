@@ -1,0 +1,8 @@
+-- To open the pdb we write
+
+ALTER PLUGGABLE DATABASE Grp_B_27541_KARURANGA_HelpDeskTrack_db OPEN;
+
+-- To connect to your pdb we write
+
+ALTER SESSION SET CONTAINER = Grp_B_27541_KARURANGA_HelpDeskTrack_db;
+
