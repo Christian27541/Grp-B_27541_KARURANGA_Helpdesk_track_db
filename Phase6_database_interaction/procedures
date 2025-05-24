@@ -1,0 +1,38 @@
+SQL> CREATE OR REPLACE PROCEDURE helpdesk_user.get_tickets_by_technician (
+  2      p_technician_id IN NUMBER
+  3  ) IS
+  4      -- Cursor to fetch tickets for the technician
+  5      CURSOR c_tickets IS
+  6          SELECT ticket_id, title, status, created_date, resolved_date
+  7          FROM helpdesk_user.tickets
+  8          WHERE assigned_to = p_technician_id;
+  9
+ 10      -- Variables to hold fetched data
+ 11      v_ticket_id       helpdesk_user.tickets.ticket_id%TYPE;
+ 12      v_title           helpdesk_user.tickets.title%TYPE;
+ 13      v_status          helpdesk_user.tickets.status%TYPE;
+ 14      v_created_date    helpdesk_user.tickets.created_date%TYPE;
+ 15      v_resolved_date   helpdesk_user.tickets.resolved_date%TYPE;
+ 16
+ 17  BEGIN
+ 18      OPEN c_tickets;
+ 19      LOOP
+ 20          FETCH c_tickets INTO v_ticket_id, v_title, v_status, v_created_date, v_resolved_date;
+ 21          EXIT WHEN c_tickets%NOTFOUND;
+ 22
+ 23          -- Output ticket info (you can customize as needed)
+ 24          DBMS_OUTPUT.PUT_LINE('Ticket ID: ' || v_ticket_id ||
+ 25                               ', Title: ' || v_title ||
+ 26                               ', Status: ' || v_status ||
+ 27                               ', Created: ' || TO_CHAR(v_created_date, 'YYYY-MM-DD') ||
+ 28                               ', Resolved: ' || NVL(TO_CHAR(v_resolved_date, 'YYYY-MM-DD'), 'N/A'));
+ 29      END LOOP;
+ 30      CLOSE c_tickets;
+ 31
+ 32  EXCEPTION
+ 33      WHEN NO_DATA_FOUND THEN
+ 34          DBMS_OUTPUT.PUT_LINE('No tickets found for technician ID ' || p_technician_id);
+ 35      WHEN OTHERS THEN
+ 36          DBMS_OUTPUT.PUT_LINE('Error fetching tickets: ' || SQLERRM);
+ 37  END;
+ 38  /
