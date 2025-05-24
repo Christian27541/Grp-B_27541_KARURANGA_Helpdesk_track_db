@@ -1,30 +1,3 @@
- CREATE OR REPLACE TRIGGER helpdesk_user.prevent_weekday_holiday_dml
-  2  BEFORE INSERT OR UPDATE OR DELETE ON helpdesk_user.tickets
-  3  FOR EACH ROW
-  4  DECLARE
-  5      v_today       DATE := TRUNC(SYSDATE);
-  6      v_day_name    VARCHAR2(10);
-  7      v_holiday_cnt NUMBER;
-  8  BEGIN
-  9      -- Get the day of the week
- 10      SELECT TO_CHAR(v_today, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') INTO v_day_name FROM dual;
- 11
- 12      -- Check if it's a weekday
- 13      IF v_day_name IN ('MON', 'TUE', 'WED', 'THU', 'FRI') THEN
- 14          RAISE_APPLICATION_ERROR(-20001, 'DML operations are not allowed on weekdays.');
- 15      END IF;
- 16
- 17      -- Check if today is a holiday
- 18      SELECT COUNT(*) INTO v_holiday_cnt
- 19      FROM helpdesk_user.holidays
- 20      WHERE holiday_date = v_today;
- 21
- 22      IF v_holiday_cnt > 0 THEN
- 23          RAISE_APPLICATION_ERROR(-20002, 'DML operations are not allowed on holidays.');
- 24      END IF;
- 25  END;
- 26  /
-
 SQL> CREATE OR REPLACE TRIGGER helpdesk_user.audit_ticket_changes
   2  AFTER INSERT OR UPDATE OR DELETE ON helpdesk_user.tickets
   3  FOR EACH ROW
@@ -71,3 +44,13 @@ SQL> CREATE OR REPLACE TRIGGER helpdesk_user.prevent_dml_weekday_holiday
  25      END IF;
  26  END;
  27  /
+
+SQL> CREATE OR REPLACE TRIGGER helpdesk_user.restrict_ticket_deletion
+  2  BEFORE DELETE ON helpdesk_user.tickets
+  3  FOR EACH ROW
+  4  BEGIN
+  5    IF SYS_CONTEXT('USERENV', 'SESSION_USER') NOT IN ('HELPDESK_ADMIN') THEN
+  6      RAISE_APPLICATION_ERROR(-20001, 'Unauthorized deletion attempt.');
+  7    END IF;
+  8  END;
+  9  /
