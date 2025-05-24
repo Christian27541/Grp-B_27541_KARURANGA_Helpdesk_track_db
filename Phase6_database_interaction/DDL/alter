@@ -1,0 +1,2 @@
+ALTER TABLE helpdesk_user.tickets
+ADD ticket_type VARCHAR2(50);
