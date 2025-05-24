@@ -1,0 +1,4 @@
+SQL> CREATE TABLE helpdesk_user.holidays (
+  2      holiday_date DATE PRIMARY KEY,
+  3      description  VARCHAR2(100)
+  4  );
