@@ -1,2 +1,2 @@
 INSERT INTO helpdesk_user.tickets (title, description, priority, assigned_to, status)
-  VALUES ('System outage', 'Entire floor is offline', 'Critical', 2, 'Open');
+VALUES ('Test Ticket', 'Temporary test record for deletion', 'Low', 2, 'Open');
