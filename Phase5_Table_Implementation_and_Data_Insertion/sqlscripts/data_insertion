@@ -1,0 +1,21 @@
+--insert into users
+  
+SQL> INSERT INTO helpdesk_user.users (username, full_name, email, role)
+  2  VALUES ('john.doe', 'John Doe', 'john.doe@example.com', 'Technician');
+
+SQL> INSERT INTO helpdesk_user.users (username, full_name, email, role)
+  2  VALUES ('jane.smith', 'Jane Smith', 'jane.smith@example.com', 'Manager');
+
+SQL> INSERT INTO helpdesk_user.users (username, full_name, email, role)
+  2  VALUES ('alice.jones', 'Alice Jones', 'alice.jones@example.com', 'Admin');
+
+-- insert into tickets
+
+SQL> INSERT INTO helpdesk_user.tickets (title, description, priority, assigned_to, status)
+  2  VALUES ('Cannot connect to VPN', 'User unable to connect to VPN since morning.', 'High', 'john.doe', 'Open');
+
+SQL> INSERT INTO helpdesk_user.tickets (title, description, priority, assigned_to, status)
+  2  VALUES ('Printer not working', 'Office printer is jammed and not printing.', 'Medium', 'john.doe', 'Assigned');
+
+SQL> INSERT INTO helpdesk_user.tickets (title, description, priority, assigned_to, status)
+  2  VALUES ('Email delivery failure', 'Some users not receiving emails from external clients.', 'Critical', 'jane.smith', 'In Progress');  
