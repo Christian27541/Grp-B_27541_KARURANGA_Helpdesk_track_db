@@ -1,0 +1,61 @@
+SQL> CREATE OR REPLACE PACKAGE helpdesk_user.ticket_pkg AS
+  2      -- Procedure to get tickets by technician
+  3      PROCEDURE get_tickets_by_technician(p_technician_id IN NUMBER);
+  4
+  5      -- Function to get total tickets count for a technician
+  6      FUNCTION get_ticket_count(p_technician_id IN NUMBER) RETURN NUMBER;
+  7  END ticket_pkg;
+  8  /
+
+SQL> CREATE OR REPLACE PACKAGE BODY helpdesk_user.ticket_pkg AS
+  3      PROCEDURE get_tickets_by_technician(p_technician_id IN NUMBER) IS
+  4          CURSOR c_tickets IS
+  5              SELECT ticket_id, title, status, created_date, resolved_date
+  6              FROM helpdesk_user.tickets
+  7              WHERE assigned_to = p_technician_id;
+  8
+  9          v_ticket_id       helpdesk_user.tickets.ticket_id%TYPE;
+ 10          v_title           helpdesk_user.tickets.title%TYPE;
+ 11          v_status          helpdesk_user.tickets.status%TYPE;
+ 12          v_created_date    helpdesk_user.tickets.created_date%TYPE;
+ 13          v_resolved_date   helpdesk_user.tickets.resolved_date%TYPE;
+ 14
+ 15      BEGIN
+ 16          OPEN c_tickets;
+ 17          LOOP
+ 18              FETCH c_tickets INTO v_ticket_id, v_title, v_status, v_created_date, v_resolved_date;
+ 19              EXIT WHEN c_tickets%NOTFOUND;
+ 20
+ 21              DBMS_OUTPUT.PUT_LINE('Ticket ID: ' || v_ticket_id ||
+ 22                                   ', Title: ' || v_title ||
+ 23                                   ', Status: ' || v_status ||
+ 24                                   ', Created: ' || TO_CHAR(v_created_date, 'YYYY-MM-DD') ||
+ 25                                   ', Resolved: ' || NVL(TO_CHAR(v_resolved_date, 'YYYY-MM-DD'), 'N/A'));
+ 26          END LOOP;
+ 27          CLOSE c_tickets;
+ 28
+ 29      EXCEPTION
+ 30          WHEN NO_DATA_FOUND THEN
+ 31              DBMS_OUTPUT.PUT_LINE('No tickets found for technician ID ' || p_technician_id);
+ 32          WHEN OTHERS THEN
+ 33              DBMS_OUTPUT.PUT_LINE('Error fetching tickets: ' || SQLERRM);
+ 34      END get_tickets_by_technician;
+ 35
+ 36
+ 37      FUNCTION get_ticket_count(p_technician_id IN NUMBER) RETURN NUMBER IS
+ 38          v_count NUMBER;
+ 39      BEGIN
+ 40          SELECT COUNT(*) INTO v_count
+ 41          FROM helpdesk_user.tickets
+ 42          WHERE assigned_to = p_technician_id;
+ 43
+ 44          RETURN v_count;
+ 45
+ 46      EXCEPTION
+ 47          WHEN OTHERS THEN
+ 48              DBMS_OUTPUT.PUT_LINE('Error getting ticket count: ' || SQLERRM);
+ 49              RETURN -1;  -- Indicate error
+ 50      END get_ticket_count;
+ 51
+ 52  END ticket_pkg;
+ 53  /
