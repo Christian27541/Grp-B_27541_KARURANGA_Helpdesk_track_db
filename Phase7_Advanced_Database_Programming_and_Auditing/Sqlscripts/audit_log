@@ -1,0 +1,7 @@
+SQL> CREATE TABLE helpdesk_user.audit_log (
+  2      log_id      NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  3      username    VARCHAR2(30),
+  4      action      VARCHAR2(10),
+  5      table_name  VARCHAR2(30),
+  6      action_date DATE DEFAULT SYSDATE
+  7  );
