@@ -1,0 +1,2 @@
+ DELETE FROM helpdesk_user.tickets
+ WHERE title = 'Test Ticket';
