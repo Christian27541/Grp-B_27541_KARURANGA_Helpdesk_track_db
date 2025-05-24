@@ -1,0 +1,52 @@
+ CREATE OR REPLACE FUNCTION helpdesk_user.get_ticket_details(
+  2    p_ticket_id NUMBER
+  3  ) RETURN SYS_REFCURSOR IS
+  4    cur SYS_REFCURSOR;
+  5  BEGIN
+  6    OPEN cur FOR
+  7      SELECT *
+  8      FROM helpdesk_user.tickets
+  9      WHERE ticket_id = p_ticket_id;
+ 10    RETURN cur;
+ 11  EXCEPTION
+ 12    WHEN OTHERS THEN
+ 13      RAISE_APPLICATION_ERROR(-20002, 'Error fetching ticket details: ' || SQLERRM);
+ 14  END;
+ 15  /
+
+SQL> CREATE OR REPLACE FUNCTION helpdesk_user.count_tickets_by_status(
+  2    p_status VARCHAR2
+  3  ) RETURN NUMBER IS
+  4    v_count NUMBER;
+  5  BEGIN
+  6    SELECT COUNT(*)
+  7    INTO v_count
+  8    FROM helpdesk_user.tickets
+  9    WHERE status = p_status;
+ 10
+ 11    RETURN v_count;
+ 12  EXCEPTION
+ 13    WHEN NO_DATA_FOUND THEN
+ 14      RETURN 0;
+ 15    WHEN OTHERS THEN
+ 16      RAISE_APPLICATION_ERROR(-20003, 'Error counting tickets: ' || SQLERRM);
+ 17  END;
+ 18  /
+ SQL> CREATE OR REPLACE FUNCTION helpdesk_user.is_technician(
+  2    p_username VARCHAR2
+  3  ) RETURN BOOLEAN IS
+  4    v_role VARCHAR2(50);
+  5  BEGIN
+  6    SELECT role
+  7    INTO v_role
+  8    FROM helpdesk_user.users
+  9    WHERE username = p_username;
+ 10
+ 11    RETURN (v_role = 'Technician');
+ 12  EXCEPTION
+ 13    WHEN NO_DATA_FOUND THEN
+ 14      RETURN FALSE;
+ 15    WHEN OTHERS THEN
+ 16      RAISE_APPLICATION_ERROR(-20005, 'Error checking user role: ' || SQLERRM);
+ 17  END;
+ 18  /
