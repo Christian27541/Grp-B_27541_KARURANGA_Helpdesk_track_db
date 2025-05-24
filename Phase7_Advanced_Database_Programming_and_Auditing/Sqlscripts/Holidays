@@ -2,3 +2,9 @@ SQL> CREATE TABLE helpdesk_user.holidays (
   2      holiday_date DATE PRIMARY KEY,
   3      description  VARCHAR2(100)
   4  );
+
+-- insert into holidays
+
+SQL> INSERT INTO helpdesk_user.holidays VALUES (TO_DATE('2025-07-01', 'YYYY-MM-DD'), 'National Independence Day');
+
+SQL> INSERT INTO helpdesk_user.holidays VALUES (TO_DATE('2025-07-04', 'YYYY-MM-DD'), 'Liberation Day');
