@@ -1,0 +1,116 @@
+**📘 Phase VI: Procedures, Cursors, and Packages Report**
+
+### 🔍 **Objective**
+
+To implement modular, reusable PL/SQL program units such as procedures and packages to enhance data manipulation, reduce redundancy, handle errors effectively, and support dynamic data retrieval through cursors.
+
+
+
+### 🛠️ **Tasks and Deliverables**
+
+#### 📦 1. Modular Procedures and Functions
+
+Custom procedures were created to automate frequent database operations like ticket insertion, updating status, and technician-level data retrieval.
+
+**🧾 Example: Procedure to Insert a New Ticket**
+
+CREATE OR REPLACE PROCEDURE helpdesk_user.add_ticket (
+  p_title IN VARCHAR2,
+  p_description IN VARCHAR2,
+  p_priority IN VARCHAR2,
+  p_assigned_to IN NUMBER
+) AS
+BEGIN
+  INSERT INTO helpdesk_user.tickets (title, description, priority, assigned_to)
+  VALUES (p_title, p_description, p_priority, p_assigned_to);
+  DBMS_OUTPUT.PUT_LINE('Ticket added successfully.');
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error inserting ticket: ' || SQLERRM);
+END;
+
+#### 🔁 2. Use of Explicit Cursors
+
+Explicit cursors were used to retrieve and display technician-specific tickets or track high-priority unresolved issues.
+
+**🧾 Example: Cursor to Fetch Tickets by Technician**
+
+CREATE OR REPLACE PROCEDURE helpdesk_user.get_tickets_by_technician (
+  p_technician_id IN NUMBER
+) AS
+  CURSOR cur IS
+    SELECT ticket_id, title, priority, status
+    FROM helpdesk_user.tickets
+    WHERE assigned_to = p_technician_id;
+
+  v_row cur%ROWTYPE;
+BEGIN
+  OPEN cur;
+  LOOP
+    FETCH cur INTO v_row;
+    EXIT WHEN cur%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('Ticket: ' || v_row.ticket_id || ' - ' || v_row.title);
+  END LOOP;
+  CLOSE cur;
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error fetching tickets: ' || SQLERRM);
+END;
+
+#### 🧰 3. Centralized Package Design
+
+A utility package `ticket_pkg` was created to group logically related operations into one modular structure, enhancing reuse and maintainability.
+
+**📦 Package Spec**
+
+CREATE OR REPLACE PACKAGE helpdesk_user.ticket_pkg IS
+  PROCEDURE add_ticket(p_title VARCHAR2, p_description VARCHAR2, p_priority VARCHAR2, p_assigned_to NUMBER);
+  PROCEDURE update_ticket_status(p_ticket_id NUMBER, p_status VARCHAR2);
+  FUNCTION count_open_tickets RETURN NUMBER;
+END ticket_pkg;
+
+
+**📦 Package Body**
+
+CREATE OR REPLACE PACKAGE BODY helpdesk_user.ticket_pkg IS
+  PROCEDURE add_ticket(...) IS
+  BEGIN
+    -- Insertion logic here
+  END;
+
+  PROCEDURE update_ticket_status(...) IS
+  BEGIN
+    -- Update logic here
+  END;
+
+  FUNCTION count_open_tickets RETURN NUMBER IS
+    v_count NUMBER;
+  BEGIN
+    SELECT COUNT(*) INTO v_count FROM helpdesk_user.tickets WHERE status = 'Open';
+    RETURN v_count;
+  END;
+END ticket_pkg;
+
+### 🧪 4. Testing and Validation
+
+Each procedure and function was tested using:
+
+
+EXEC helpdesk_user.ticket_pkg.add_ticket('VPN Error', 'User cannot connect', 'High', 2);
+EXEC helpdesk_user.ticket_pkg.update_ticket_status(1, 'In Progress');
+SELECT helpdesk_user.ticket_pkg.count_open_tickets FROM dual;
+```
+
+Output and logs confirmed correct behavior and handled edge cases like nonexistent technician IDs or invalid ticket IDs gracefully.
+
+### ⚠️ Challenges Faced
+
+* **Data Dependencies**: Procedures depending on foreign keys required test data setup first.
+* **Error Handling**: Ensured `WHEN OTHERS` block was used without suppressing meaningful exceptions.
+* **Package Compilation**: Initial invalid state fixed by explicitly compiling package body after spec.
+
+### ✅ Conclusion
+
+Phase VI establishes a strong foundation of modular PL/SQL programming. Procedures simplify repetitive tasks, cursors enable dynamic data handling, and packages provide reusable, maintainable code architecture. This phase contributes significantly to automation and maintainability of the helpdesk system.
+
+> 🔧 *Next Steps*: Implement advanced triggers, restriction rules, and auditing mechanisms (Phase VII).
