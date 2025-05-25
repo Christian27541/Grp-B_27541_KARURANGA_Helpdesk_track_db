@@ -159,13 +159,12 @@ The development process followed a **multi-phase, waterfall-inspired approach** 
 
 #### 🔄 Tools and Practices Used:
 
-* **Oracle 19c** with SQL\*Plus and SQL Developer
+* **Oracle 21c** with SQL\*Plus and SQL Developer
 * **PL/SQL Packages** for modular logic and auditing
 * **Triggers** to automate compliance (e.g., holiday restrictions)
 * **Draw\.io** for ERD and business process diagrams
 * **Auditing Logs** for traceability of user actions
 
----
 
 ### 🔐 Security & Access Control
 
